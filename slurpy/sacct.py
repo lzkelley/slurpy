@@ -21,7 +21,7 @@ def _parse_sacct():
     """
     # Determine the keys to include in the sacct results (i.e. sacct output format)
     use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
-    num_keys = len(use_keys)
+    # num_keys = len(use_keys)
     keys = ",".join(use_keys)
     # print("Keys: {} - {}".format(num_keys, keys))
 
@@ -88,7 +88,7 @@ def _filter_lines(lines, header, state=None):
     clean = [cc for cc in clean
              if not (cc['JobID'].endswith('extern') or cc['JobID'].endswith('batch'))]
 
-     # Make sure filter parameters are included in header
+    # Make sure filter parameters are included in header
     if state is not None:
         if 'State' not in header:
             print("WARNING: 'State' not in header: '{}'".format(header))
