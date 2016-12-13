@@ -4,39 +4,13 @@ import subprocess
 from collections import OrderedDict
 import numpy as np
 
-from slurpy.const import META_WIDTH, SACCT_KEYS
+from slurpy.const import META_WIDTH, SACCT_KEYS, SEP_CHAR
 
 
 def sacct(status):
 
     lines, header = _parse_sacct()
     _print_lines_dicts(lines, header)
-
-    return
-
-
-
-    use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
-    keys = ",".join(use_keys)
-
-    command = ['sacct', '--format', keys]
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    text = p.stdout.read()
-    retcode = p.wait()
-    # print("retcode = ", retcode)
-
-    lines = text.split('\n')
-    header = lines.pop(0)
-    lines = lines[1:]
-    for ii, ll in enumerate(lines):
-        # print(ii, ll)
-        parts = ll.split()
-        if 'extern' in parts or 'batch' in parts:
-            continue
-        # nice_parts = "{:4d}: ".format(ii) + ", ".join('{1:{0:}}'.format(PRINT_WIDTH, pp.strip()) for pp in parts)
-        nice_parts = "{:4d}: ".format(ii) + ", ".join('{}'.format(pp.strip()) for pp in parts)
-        if status is None or status in parts:
-            print(nice_parts)
 
     return
 
@@ -87,7 +61,7 @@ def _parse_sacct_line(line, header):
 
 
 def _print_lines_dicts(lines, header):
-    """
+    """Print each line (containing a dict) of `sacct` results.  Format nicely.
     """
     num_keys = len(header)
     # Find the maximum length of each component of each line
@@ -96,10 +70,10 @@ def _print_lines_dicts(lines, header):
         for ii, (key, val) in enumerate(ll.items()):
             sizes[ii] = np.maximum(sizes[ii], len(val))
 
-
     # pretty print lines
+    form = SEP_CHAR.join("{{:>{sz}s}}".format(sz=ss) for ss in sizes)
+    print(form.format(*header))
     for ll in lines:
-        form = " ".join("{:{{sz}}>s}".format(sz=ss) for ss in sizes)
-        print(form)
+        print(form.format(*ll.values()))
 
     return
