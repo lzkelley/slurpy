@@ -1,13 +1,17 @@
-Change-Log for slurpy
-=====================
+# Change-Log for slurpy
+# =====================
+
+## To-Do
+## -----
+1)  Make a 'summary' command to run 'sacct' and summarize the results.  For example: the number of jobs in each 'state', and the typical time for completed and still running jobs, etc.
 
 
-# Current
-# -------
+## Current
+## -------
 
 
-# v0.1 - 2016/12/13
-# -----------------
+## v0.1 - 2016/12/13
+## -----------------
 -   `slurpy/__main__.py`
     -   Primary entry point for the `slurpy` package.  Currently just calls the `sacct.sacct()` method.  In the future will use subcommands (and arguments) to determine which specific functions to delegate to.
 -   `slurpy/const.py`
