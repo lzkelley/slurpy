@@ -15,7 +15,7 @@ def _init_argparse():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--status",
-                        type=str, dest="status", default="RUNNING",
+                        type=str, dest="status", default=None,
                         help="Status to filter by (e.g. 'RUNNING', 'COMPLETED')")
 
     args = parser.parse_args()
