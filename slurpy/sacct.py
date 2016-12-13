@@ -7,7 +7,9 @@ import numpy as np
 from slurpy.const import META_WIDTH, SACCT_KEYS, SEP_CHAR
 
 
-def sacct(state):
+def sacct(state=None):
+    """
+    """
 
     lines, header = _parse_sacct()
     lines = _filter_lines(lines, header, state=state)
@@ -64,6 +66,10 @@ def _parse_sacct_line(line, header):
 def _print_lines_dicts(lines, header):
     """Print each line (containing a dict) of `sacct` results.  Format nicely.
     """
+    # If there are no selected lines, return
+    if not len(lines):
+        return
+
     num_keys = len(header)
     # Find the maximum length of each component of each line
     sizes = np.zeros(num_keys, dtype=int)
@@ -71,9 +77,11 @@ def _print_lines_dicts(lines, header):
         for ii, (key, val) in enumerate(ll.items()):
             sizes[ii] = np.maximum(sizes[ii], len(val))
 
-    # pretty print lines
+    # Create nice formatting string
     form = SEP_CHAR.join("{{:>{sz}s}}".format(sz=ss) for ss in sizes)
+    # Print header
     print(form.format(*header))
+    # Print each line
     for ll in lines:
         print(form.format(*ll.values()))
 
