@@ -5,8 +5,8 @@ META_WIDTH = 50
 # PRINT_WIDTH = 30
 SEP_CHAR = ", "
 
-SACCT_KEYS = ['JobID', 'jobname', 'state', 'submit', 'elapsed',
+SACCT_KEYS = ['JobID', 'jobname', 'State', 'Submit', 'Elapsed',
               'AveVMSize', 'MaxVMSize', 'ReqMem', 'AveDiskRead', 'AveDiskWrite',
               'partition', 'nodelist']
 
-STATUS_KEYS = ['RUNNING', 'COMPLETED', 'FAILED']
+STATE_KEYS = ['RUNNING', 'COMPLETED', 'FAILED']
