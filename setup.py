@@ -1,5 +1,4 @@
 from setuptools import setup
-import version
 
 readme = open('README.md').read()
 version = open('VERSION').read().strip()
@@ -20,6 +19,9 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     long_description=readme,
+    entry_points={
+        'console_scripts': ['slurpy=slurpy.__main__:main'],
+    },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
