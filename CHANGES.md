@@ -11,10 +11,12 @@
     -   Added `--verbose` command-line argument to modify results.
     -   Added `--summary` command-line argument to summarize all jobs reported by 'sacct'.  Currently returns the counts and optionally the min, max, median elapsed time for each state (if the `--verbose` flag is passed).
 -   `slurpy/sacct.py`
-    -   `summary()`
+    -   `summary()` [new-method]
         -   API method to parse 'sacct' command results and summarize succinctly.
         -   Reports number of jobs in each 'state'
         -   If `verbose`, then reports min, max, median elapsed time for each state.
+-   `slurpy/utils.py` [new-file]
+    -   File for general purpose utility methods.  Currently empty.
 
 ## v0.1 - 2016/12/13
 ## -----------------
