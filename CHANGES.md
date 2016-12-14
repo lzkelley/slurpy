@@ -1,6 +1,7 @@
 # Change-Log for slurpy
 # =====================
 
+
 ## To-Do
 ## -----
 
@@ -17,6 +18,7 @@
         -   If `verbose`, then reports min, max, median elapsed time for each state.
 -   `slurpy/utils.py` [new-file]
     -   File for general purpose utility methods.  Currently empty.
+
 
 ## v0.1 - 2016/12/13
 ## -----------------
