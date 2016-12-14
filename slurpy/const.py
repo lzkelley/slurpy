@@ -9,4 +9,4 @@ SACCT_KEYS = ['JobID', 'jobname', 'State', 'Submit', 'Elapsed',
               'AveVMSize', 'MaxVMSize', 'ReqMem', 'AveDiskRead', 'AveDiskWrite',
               'partition', 'nodelist']
 
-STATE_KEYS = ['RUNNING', 'COMPLETED', 'FAILED']
+STATE_KEYS = ['PENDING', 'RUNNING', 'COMPLETED', 'FAILED']
