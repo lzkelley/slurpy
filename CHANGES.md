@@ -8,6 +8,8 @@
 
 ## Current
 ## -------
+-  `setup.py`
+    -   Added console entry point to setup script, (and appropriately modified `setup.sh`) to install `slurpy` as a script which is runnable from anywhere via the command line.  Working.
 -   `slurpy/__main__.py`
     -   Added `--verbose` command-line argument to modify results.
     -   Added `--summary` command-line argument to summarize all jobs reported by 'sacct'.  Currently returns the counts and optionally the min, max, median elapsed time for each state (if the `--verbose` flag is passed).
