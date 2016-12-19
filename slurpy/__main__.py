@@ -1,12 +1,15 @@
 """
 """
-from slurpy import sacct
+from slurpy import sacct, squeue
 
 
 def main():
     args = _init_argparse()
     if args.summary:
         sacct.summary(args.verbose)
+        return
+    if args.queue:
+        squeue.squeue()
         return
 
     sacct.sacct(args.state)
@@ -28,6 +31,10 @@ def _init_argparse():
     parser.add_argument("--summary",
                         action="store_true", dest="summary", default=False,
                         help="Print a summary from the current 'sacct' results.")
+
+    parser.add_argument("--queue",
+                        action="store_true", dest="queue", default=False,
+                        help="Print the current 'squeue' results.")
 
     args = parser.parse_args()
     return args
