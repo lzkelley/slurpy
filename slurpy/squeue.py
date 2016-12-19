@@ -6,11 +6,14 @@ from collections import OrderedDict
 import numpy as np
 import datetime
 
+from . import utils
 from slurpy.const import META_WIDTH, SQUEUE_KEYS, SEP_CHAR, STATE_KEYS
 
 
 def squeue(queue=None):
     lines, header = _parse_squeue()
+    # lines = _filter_lines(lines, header, state=state)
+    utils.print_lines_dicts(lines, header)
     return
 
 
@@ -21,21 +24,23 @@ def _parse_squeue():
     use_keys = [kk + ":{}".format(META_WIDTH) for kk in SQUEUE_KEYS]
     # num_keys = len(use_keys)
     keys = "\"" + ",".join(use_keys) + "\""
-    keys = "username,jobid,name,timeleft"
-    print("'{}'".format(keys))
+    # keys = "username,jobid,name,timeleft"
+    # print("'{}'".format(keys))
     # print("Keys: {} - {}".format(num_keys, keys))
 
     # Get results from `sacct`
-    # command = ['/usr/bin/squeue', '--Format=', keys]
-    command = ['squeue', '--Format=', keys]
-    command = command[0] + " " + command[1] + command[2]
-    command = "/usr/bin/squeue"
+    # _com = "squeue"
+    _com = "/usr/bin/squeue"
+    command = [_com, '--Format=' + keys]
+    # command = command[0] + " " + command[1] + command[2]
+    # command = "/usr/bin/squeue"
     print("Calling:\n", command, "\n")
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = p.stdout.read()
-    print(text)
-    # retcode = p.wait()
-    # p.wait()
+    # print(text)
+    retcode = p.wait()
+    if retcode:
+        print("retcode = '{}'".format(retcode))
 
     # Parse results
     # Convert from bytes to string
