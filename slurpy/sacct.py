@@ -6,6 +6,7 @@ from collections import OrderedDict
 import numpy as np
 import datetime
 
+from . import utils
 from slurpy.const import META_WIDTH, SACCT_KEYS, SEP_CHAR, STATE_KEYS
 
 
@@ -14,7 +15,7 @@ def sacct(state=None):
     """
     lines, header = _parse_sacct()
     lines = _filter_lines(lines, header, state=state)
-    _print_lines_dicts(lines, header)
+    utils.print_lines_dicts(lines, header)
     return
 
 
@@ -25,7 +26,7 @@ def summary(verbose=False, state=None):
     lines, header = _parse_sacct()
     lines = _filter_lines(lines, header, state=state)
     num_states = len(STATE_KEYS)
-    now = datetime.datetime.now()
+    # now = datetime.datetime.now()
 
     # Number of jobs in each state
     state_counts = np.zeros(num_states, dtype=int)
@@ -126,31 +127,6 @@ def _parse_sacct_line(line, header):
         comps[key] = val.strip()
 
     return comps
-
-
-def _print_lines_dicts(lines, header):
-    """Print each line (containing a dict) of `sacct` results.  Format nicely.
-    """
-    # If there are no selected lines, return
-    if not len(lines):
-        return
-
-    num_keys = len(header)
-    # Find the maximum length of each component of each line
-    sizes = np.zeros(num_keys, dtype=int)
-    for ll in lines:
-        for ii, (key, val) in enumerate(ll.items()):
-            sizes[ii] = np.maximum(sizes[ii], len(val))
-
-    # Create nice formatting string
-    form = SEP_CHAR.join("{{:>{sz}s}}".format(sz=ss) for ss in sizes)
-    # Print header
-    print(form.format(*header))
-    # Print each line
-    for ll in lines:
-        print(form.format(*ll.values()))
-
-    return
 
 
 def _filter_lines(lines, header, state=None):
