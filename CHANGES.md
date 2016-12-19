@@ -4,6 +4,7 @@
 
 ## To-Do
 ## -----
+- Add a builtin 'watch' sub-command, to continually re-quiery every N seconds.
 
 
 ## Current
