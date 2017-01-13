@@ -1,4 +1,6 @@
-"""
+"""Main entry point for `slurpy` scripts.
+
+Default behavior is to run 'sacct' and print parsed output.
 """
 from slurpy import sacct, squeue
 
