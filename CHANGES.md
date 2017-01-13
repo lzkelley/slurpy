@@ -4,11 +4,14 @@
 
 ## To-Do
 ## -----
-- Add a builtin 'watch' sub-command, to continually re-quiery every N seconds.
-
+-   Add a builtin 'watch' sub-command, to continually re-quiery every N seconds.
+-   Look at older history with `sacct --starttime`
+-   Add tests.
+ 
 
 ## Current
 ## -------
+-  Added 'CANCELLED' and 'TIMEOUT' states.
 -  `setup.py`
     -   Added console entry point to setup script, (and appropriately modified `setup.sh`) to install `slurpy` as a script which is runnable from anywhere via the command line.  Working.
 -   `slurpy/__main__.py`
