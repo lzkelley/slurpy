@@ -86,16 +86,12 @@ def _parse_sacct():
     """
     # Determine the keys to include in the sacct results (i.e. sacct output format)
     use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
-    # num_keys = len(use_keys)
     keys = ",".join(use_keys)
-    # print("Keys: {} - {}".format(num_keys, keys))
 
     # Get results from `sacct`
     command = ['sacct', '--format', keys]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = p.stdout.read()
-    # retcode = p.wait()
-    # p.wait()
 
     # Parse results
     # Convert from bytes to string
