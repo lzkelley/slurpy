@@ -2,7 +2,10 @@
 
 Default behavior is to run 'sacct' and print parsed output.
 """
-from slurpy import sacct, squeue, scancel
+from slurpy import sacct, squeue, scancel, utils
+
+# Prompt the user to confirm before canceling jobs.
+_CANCEL_PROMPT = True
 
 
 def main():
@@ -14,6 +17,18 @@ def main():
         squeue.squeue(args)
         return
     if args.cancel:
+        if _CANCEL_PROMPT:
+            lines, header = sacct.sacct_results(args)
+            # Print the jobs about to be canceled
+            if args.verbose:
+                print("\nCancel would end the following jobs:\n")
+                utils.print_lines_dicts(lines, header)
+                print("")
+            prompt = "Are you sure you want to cancel {} jobs?".format(len(lines))
+            if not utils.prompt_yes_no(prompt, default='no'):
+                print("Exiting.")
+                return
+
         scancel.scancel(args)
         return
 

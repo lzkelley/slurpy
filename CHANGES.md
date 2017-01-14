@@ -17,6 +17,7 @@
 -   Added `--summary` command-line argument to summarize all jobs reported by 'sacct'.  Currently returns the counts and optionally the min, max, median elapsed time for each state (if the `--verbose` flag is passed).
 -   Added `-p`/`--partition` argument to select a particular partition of the cluster.
 -   Added `--cancel` command, to cancel submitted jobs.
+    -   When the (hardcoded) `_CANCEL_PROMPT` is set to True, then '__main__' will prompt the user to confirm that they want to cancel the jobs.  If `verbose` is enabled, it will also print the jobs about to be canceled.
 
 -  `setup.py`
     -   Added console entry point to setup script, (and appropriately modified `setup.sh`) to install `slurpy` as a script which is runnable from anywhere via the command line.  Working.
