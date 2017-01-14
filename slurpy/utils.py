@@ -1,4 +1,13 @@
 """General purpose utility functions.
+
+Functions
+---------
+-   print_lines_dicts        -
+
+-   _format_line             -
+-   _calculate_formatting    -
+
+
 """
 import numpy as np
 

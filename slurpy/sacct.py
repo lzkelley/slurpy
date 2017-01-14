@@ -1,4 +1,17 @@
 """Interact with the `sacct` SLURM command.
+
+Functions
+---------
+-   sacct              -
+-   sacct_results      -
+-   summary            -
+
+
+-   _parse_sacct       -
+-   _parse_sacct_line  -
+-   _filter_lines      -
+-   _filter_by         -
+
 """
 
 import subprocess
