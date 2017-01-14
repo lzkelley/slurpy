@@ -7,6 +7,7 @@
 -   Add a builtin 'watch' sub-command, to continually re-quiery every N seconds.
 -   Look at older history with `sacct --starttime`
 -   Add tests.
+-   Change '--cancel' to 'cancel' subcommand.
  
 
 ## Current
@@ -30,7 +31,8 @@
     -   File for general purpose utility methods.  Currently empty.
     -   `print_lines_dicts()` [new-method]
         -   Method for pretty-printing lines retrieved from 'sacct'.
-
+    -   `prompt_yes_no` [new-method]
+        -   Prompt the user for a y/n answer for an arbitrary question, take5n from [Recipe 57708](http://code.activestate.com/recipes/577058/).
 
 ## v0.1 - 2016/12/13
 ## -----------------
