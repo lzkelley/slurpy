@@ -40,6 +40,10 @@ def _init_argparse():
                         action="store_true", dest="queue", default=False,
                         help="Print the current 'squeue' results.")
 
+    parser.add_argument("-p", "--partition",
+                        nargs='?', const="", default=None, dest="partition",
+                        help="Target a particular 'Partition' of the cluster.")
+
     # NOTE: this should be changed to a subcommand
     parser.add_argument("--cancel",
                         action="store_true", dest="cancel", default=False,
