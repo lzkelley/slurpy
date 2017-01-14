@@ -25,6 +25,8 @@
         -   If `verbose`, then reports min, max, median elapsed time for each state.
 -   `slurpy/utils.py` [new-file]
     -   File for general purpose utility methods.  Currently empty.
+    -   `print_lines_dicts()` [new-method]
+        -   Method for pretty-printing lines retrieved from 'sacct'.
 
 
 ## v0.1 - 2016/12/13
