@@ -8,13 +8,15 @@ from slurpy import sacct, squeue
 def main():
     args = _init_argparse()
     if args.summary:
-        sacct.summary(args.verbose)
+        sacct.summary(args)
         return
     if args.queue:
-        squeue.squeue()
+        squeue.squeue(args)
         return
+    if args.cancel:
+        scancel.scancel(args)
 
-    sacct.sacct(args.state)
+    sacct.sacct(args)
     return
 
 

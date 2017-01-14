@@ -10,21 +10,30 @@ from . import utils
 from slurpy.const import META_WIDTH, SACCT_KEYS, SEP_CHAR, STATE_KEYS
 
 
-def sacct(state=None):
+def sacct(args):
     """
     """
     lines, header = _parse_sacct()
-    lines = _filter_lines(lines, header, state=state)
+    lines = _filter_lines(lines, header, state=args.state)
     utils.print_lines_dicts(lines, header)
     return
 
 
-def summary(verbose=False, state=None):
+def sacct_results(args):
+    """Call 'sacct', parse and filter the results.
+    """
+    lines, header = _parse_sacct()
+    lines = _filter_lines(lines, header, state=args.state)
+    return lines, header
+
+
+def summary(args):
     """Construct a summary of jobs described by the sacct command.
     """
+    verbose = args.verbose
     # Call `sacct`, parse results and filter output
     lines, header = _parse_sacct()
-    lines = _filter_lines(lines, header, state=state)
+    lines = _filter_lines(lines, header, state=args.state)
     num_states = len(STATE_KEYS)
     # now = datetime.datetime.now()
 

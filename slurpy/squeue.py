@@ -10,7 +10,7 @@ from . import utils
 from slurpy.const import META_WIDTH, SQUEUE_KEYS, SEP_CHAR, STATE_KEYS
 
 
-def squeue(queue=None):
+def squeue(args):
     lines, header = _parse_squeue()
     # lines = _filter_lines(lines, header, state=state)
     utils.print_lines_dicts(lines, header)
