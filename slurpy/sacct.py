@@ -2,16 +2,16 @@
 
 Functions
 ---------
--   sacct              -
--   sacct_results      -
--   summary            -
+-   sacct                 -
+-   sacct_results         -
+-   summary               -
 
 
--   _parse_sacct       -
--   _parse_sacct_line  -
--   _filter_lines      -
--   _filter_by         -
-
+-   _parse_sacct          -
+-   _parse_sacct_line     -
+-   _filter_lines         -
+-   _filter_by            -
+-   _parse_state_value    - Retrieve the index corresponding to the given state.
 """
 
 import subprocess
@@ -56,11 +56,9 @@ def summary(args):
     # ---------------------
     for ii, ll in enumerate(lines):
         # Find the state of this job
-        state = ll['State']
-        try:
-            idx = STATE_KEYS.index(state)
-        except:
-            print("WARNING: state '{}' not in keys".format(state))
+        state, idx = _parse_state_value(ll['State'])
+        # If 'state' is unrecognized, 'None' is returned; skip
+        if state is None:
             continue
 
         state_counts[idx] += 1
@@ -171,3 +169,23 @@ def _filter_by(line, var, key, header):
 
     print("WARNING: '{}' not in header: '{}'".format(key, header))
     return line
+
+
+def _parse_state_value(state):
+    """Retrieve the index corresponding to the given state (as returned by 'sacct').
+
+    The 'CANCELLED' state needs special filtering.
+    """
+
+    # Handle 'CANCELLED' specially
+    #    e.g. 'CANCELLED by 56895'
+    if state.lower().startswith('cancelled'):
+        state = state.split(' by ')[0]
+
+    try:
+        idx = STATE_KEYS.index(state)
+    except:
+        print("WARNING: state '{}' not in keys".format(state))
+        return None, None
+
+    return state, idx
