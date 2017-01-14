@@ -2,7 +2,7 @@
 
 Default behavior is to run 'sacct' and print parsed output.
 """
-from slurpy import sacct, squeue
+from slurpy import sacct, squeue, scancel
 
 
 def main():
@@ -15,6 +15,7 @@ def main():
         return
     if args.cancel:
         scancel.scancel(args)
+        return
 
     sacct.sacct(args)
     return
