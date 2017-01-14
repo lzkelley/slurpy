@@ -36,9 +36,14 @@ def _init_argparse():
                         action="store_true", dest="summary", default=False,
                         help="Print a summary from the current 'sacct' results.")
 
-    parser.add_argument("--queue",
+    parser.add_argument("-q", "--queue",
                         action="store_true", dest="queue", default=False,
                         help="Print the current 'squeue' results.")
+
+    # NOTE: this should be changed to a subcommand
+    parser.add_argument("--cancel",
+                        action="store_true", dest="cancel", default=False,
+                        help="Cancel submitted SLURM jobs.")
 
     args = parser.parse_args()
     return args
