@@ -31,11 +31,8 @@ def summary(args):
     """
     verbose = args.verbose
     # Call `sacct`, parse results and filter output
-    # lines, header = _parse_sacct()
-    # lines = _filter_lines(lines, header, state=args.state)
     lines, header = sacct_results(args)
     num_states = len(STATE_KEYS)
-    # now = datetime.datetime.now()
 
     # Number of jobs in each state
     state_counts = np.zeros(num_states, dtype=int)
