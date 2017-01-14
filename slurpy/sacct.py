@@ -11,10 +11,9 @@ from slurpy.const import META_WIDTH, SACCT_KEYS, SEP_CHAR, STATE_KEYS
 
 
 def sacct(args):
+    """Call the 'sacct', parse and filter results and print to output.
     """
-    """
-    lines, header = _parse_sacct()
-    lines = _filter_lines(lines, header, state=args.state)
+    lines, header = sacct_results(args)
     utils.print_lines_dicts(lines, header)
     return
 
@@ -23,7 +22,7 @@ def sacct_results(args):
     """Call 'sacct', parse and filter the results.
     """
     lines, header = _parse_sacct()
-    lines = _filter_lines(lines, header, state=args.state)
+    lines = _filter_lines(lines, header, state=args.state, partition=args.partition)
     return lines, header
 
 
@@ -32,8 +31,9 @@ def summary(args):
     """
     verbose = args.verbose
     # Call `sacct`, parse results and filter output
-    lines, header = _parse_sacct()
-    lines = _filter_lines(lines, header, state=args.state)
+    # lines, header = _parse_sacct()
+    # lines = _filter_lines(lines, header, state=args.state)
+    lines, header = sacct_results(args)
     num_states = len(STATE_KEYS)
     # now = datetime.datetime.now()
 
@@ -134,7 +134,7 @@ def _parse_sacct_line(line, header):
     return comps
 
 
-def _filter_lines(lines, header, state=None):
+def _filter_lines(lines, header, state=None, partition=None):
     """Filter the given lines based on some parameter (e.g. state).
     """
     clean = list(lines)
@@ -142,12 +142,22 @@ def _filter_lines(lines, header, state=None):
     clean = [cc for cc in clean
              if not (cc['JobID'].endswith('extern') or cc['JobID'].endswith('batch'))]
 
-    # Make sure filter parameters are included in header
-    if state is not None:
-        if 'State' not in header:
-            print("WARNING: 'State' not in header: '{}'".format(header))
-            return clean
-
-        clean = [cc for cc in clean if cc['State'] == state]
+    # Filter by 'State'
+    clean = _filter_by(clean, state, 'State', header)
+    # Filter by 'Partition'
+    clean = _filter_by(clean, partition, 'Partition', header)
 
     return clean
+
+
+def _filter_by(line, var, key, header):
+    # If the filtering parameter is given (not None), and the key is in the header
+    if var is None:
+        return line
+
+    if key in header:
+        clean = [cc for cc in line if cc[key] == var]
+        return clean
+
+    print("WARNING: '{}' not in header: '{}'".format(key, header))
+    return line
