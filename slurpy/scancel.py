@@ -1,4 +1,9 @@
 """Cancel submitted jobs using the 'scancel' SLURM command.
+
+Functions
+---------
+-   scancel           - Cancel submitted jobs.
+
 """
 
 import subprocess
@@ -16,9 +21,21 @@ def scancel(args):
     """
     # Get filtered job information
     lines, header = sacct.sacct_results(args)
-    utils.print_lines_dicts(lines, header)
+    # utils.print_lines_dicts(lines, header)
 
     # Extract JobID numbers
     jids = [jj['JobID'] for jj in lines]
+
+    form = utils._calculate_formatting(lines, header)
+    for ii, (jj, ll) in enumerate(zip(jids, lines)):
+        # print(ii, jj, utils._format_line(ll, form))
+        command = ['scancel', jj]
+        print("Cancelling job '{}' - '{}'".format(jj, ll['JobName']))
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # decome from bytes to strings
+        text = p.stdout.read().decode('ascii')
+        if text:
+            print("\tRecieved: '{}'".format(text))
+        # break
 
     return
