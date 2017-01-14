@@ -16,4 +16,4 @@ SQUEUE_KEYS = ['account', 'arrayjobid', 'arraytaskid', 'command', 'cores',
 
 DEF_PARTITIONS = ['hernquist', 'itccluster']
 
-STATE_KEYS = ['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELED', 'TIMEOUT']
+STATE_KEYS = ['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT']
