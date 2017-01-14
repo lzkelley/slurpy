@@ -9,6 +9,7 @@
 -   Add tests.
 -   Change '--cancel' to 'cancel' subcommand.
 -   Finish developing '--queue' argument.
+-   Filter jobs by submission time, or job ID number
 
 
 ## Current
