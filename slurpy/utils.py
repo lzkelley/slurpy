@@ -12,6 +12,27 @@ def print_lines_dicts(lines, header):
     if not len(lines):
         return
 
+    form = _calculate_formatting(lines, header)
+
+    # Print header
+    print(form.format(*header))
+    # Print each line
+    for ll in lines:
+        pstr = _format_line(ll, form)
+        print(pstr)
+
+    return
+
+
+def _format_line(line, form):
+    return form.format(*line.values())
+
+
+def _calculate_formatting(lines, header):
+    """Construct an appropriately formatted string to print lines.
+    """
+    lines = np.atleast_1d(lines)
+
     num_keys = len(header)
     # Find the maximum length of each component of each line
     #    Start with the size of the header values
@@ -22,11 +43,4 @@ def print_lines_dicts(lines, header):
 
     # Create nice formatting string
     form = SEP_CHAR.join("{{: >{sz}s}}".format(sz=ss) for ss in sizes)
-    # Print header
-    print(form.format(*header))
-    # Print each line
-    for ll in lines:
-        # print(len(ll), num_keys)
-        print(form.format(*ll.values()))
-
-    return
+    return form
