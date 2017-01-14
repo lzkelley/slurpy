@@ -8,10 +8,15 @@
 -   Look at older history with `sacct --starttime`
 -   Add tests.
 -   Change '--cancel' to 'cancel' subcommand.
- 
+-   Finish developing '--queue' argument.
+
 
 ## Current
 ## -------
+
+
+## v0.2 - 2017/01/14
+## -----------------
 -   Added 'CANCELLED' and 'TIMEOUT' states.
 -   Added `--verbose` command-line argument to modify results.
 -   Added `--summary` command-line argument to summarize all jobs reported by 'sacct'.  Currently returns the counts and optionally the min, max, median elapsed time for each state (if the `--verbose` flag is passed).
