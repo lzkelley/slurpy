@@ -35,7 +35,7 @@ def sacct_results(args):
     """Call 'sacct', parse and filter the results.
     """
     lines, header = _parse_sacct()
-    lines = _filter_lines(lines, header, state=args.state, partition=args.partition)
+    lines = _filter_lines(lines, header, state=args.state, partition=args.partition, name=args.name)
     return lines, header
 
 
@@ -142,7 +142,7 @@ def _parse_sacct_line(line, header):
     return comps
 
 
-def _filter_lines(lines, header, state=None, partition=None):
+def _filter_lines(lines, header, state=None, partition=None, name=None):
     """Filter the given lines based on some parameter (e.g. state).
     """
     clean = list(lines)
@@ -154,6 +154,10 @@ def _filter_lines(lines, header, state=None, partition=None):
     clean = _filter_by(clean, state, 'State', header)
     # Filter by 'Partition'
     clean = _filter_by(clean, partition, 'Partition', header)
+
+    # Filter by job name
+    if name is not None:
+        clean = _filter_by_name(clean, name, header)
 
     return clean
 
@@ -170,6 +174,12 @@ def _filter_by(line, var, key, header):
     print("WARNING: '{}' not in header: '{}'".format(key, header))
     return line
 
+
+def _filter_by_name(lines, name, header):
+    if name is None:
+        return lines
+    clean = [nn for nn in lines if name in nn['JobName']]
+    return clean
 
 def _parse_state_value(state):
     """Retrieve the index corresponding to the given state (as returned by 'sacct').

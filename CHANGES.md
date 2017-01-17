@@ -10,11 +10,13 @@
 -   Change '--cancel' to 'cancel' subcommand.
 -   Finish developing '--queue' argument.
 -   Filter jobs by submission time, or job ID number
+-   Make filter arguments accept lists (e.g. for name or state)
 
 
 ## Current
 ## -------
-
+-   Added `--name` argument, 'sacct' results now filtered by job-name.
+    -   Currently uses only a case-sensitive check, using 'in' (i.e. if the filtering parameter is inside the job-name, then it passes the check).
 
 ## v0.2 - 2017/01/14
 ## -----------------

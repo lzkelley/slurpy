@@ -48,6 +48,10 @@ def _init_argparse():
                         type=str, dest="state", default=None,
                         help="state to filter by (e.g. 'RUNNING', 'COMPLETED')")
 
+    parser.add_argument("--name",
+                        type=str, dest="name", default=None,
+                        help="job name to filter by")
+
     parser.add_argument("--summary",
                         action="store_true", dest="summary", default=False,
                         help="Print a summary from the current 'sacct' results.")
