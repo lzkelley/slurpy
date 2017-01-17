@@ -4,7 +4,7 @@
 META_WIDTH = 50
 SEP_CHAR = ", "
 
-SACCT_KEYS = ['JobID', 'jobname', 'State', 'Submit', 'Elapsed',
+SACCT_KEYS = ['JobID', 'JobName', 'State', 'Submit', 'Elapsed',
               'AveVMSize', 'MaxVMSize', 'ReqMem', 'AveDiskRead', 'AveDiskWrite',
               'partition', 'nodelist']
 
