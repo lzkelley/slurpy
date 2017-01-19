@@ -50,7 +50,7 @@ def _filter_fields_in_lines(lines, header, keys=None):
     """Select only the desired `keys` from the given header and each line of lines.
     """
     if keys is None:
-        return lines
+        return lines, header
 
     # Find which elements of `header` are desired (i.e. in keys)
     clean_header = [hh for hh in header if hh in keys]
