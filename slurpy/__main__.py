@@ -22,7 +22,7 @@ def main():
             # Print the jobs about to be canceled
             if args.verbose:
                 print("\nCancel would end the following jobs:\n")
-                utils.print_lines_dicts(lines, header)
+                utils.print_lines_dicts(lines, header, args)
                 print("")
             prompt = "Are you sure you want to cancel {} jobs?".format(len(lines))
             if not utils.prompt_yes_no(prompt, default='no'):

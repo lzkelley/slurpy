@@ -27,7 +27,7 @@ def sacct(args):
     """Call the 'sacct', parse and filter results and print to output.
     """
     lines, header = sacct_results(args)
-    utils.print_lines_dicts(lines, header)
+    utils.print_lines_dicts(lines, header, args)
     return
 
 
@@ -102,8 +102,8 @@ def _parse_sacct(args):
     """Call the `sacct` command and parse the output.
     """
     command = _construct_sacct_command()
-    if args.verbose:
-        print("Running: '{}'\n\t'{}'".format(command, " ".join(command)))
+    # if args.verbose:
+    #     print("Running: '{}'\n\t'{}'".format(command, " ".join(command)))
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = p.stdout.read()
 
@@ -192,6 +192,7 @@ def _filter_by_name(lines, name, header):
     clean = [nn for nn in lines if name in nn['JobName']]
     return clean
 
+
 def _parse_state_value(state):
     """Retrieve the index corresponding to the given state (as returned by 'sacct').
 
@@ -210,4 +211,3 @@ def _parse_state_value(state):
         return None, None
 
     return state, idx
-

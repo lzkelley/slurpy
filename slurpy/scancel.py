@@ -21,7 +21,7 @@ def scancel(args):
     """
     # Get filtered job information
     lines, header = sacct.sacct_results(args)
-    # utils.print_lines_dicts(lines, header)
+    # utils.print_lines_dicts(lines, header, args)
 
     # Extract JobID numbers
     jids = [jj['JobID'] for jj in lines]
