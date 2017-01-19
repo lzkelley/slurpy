@@ -34,7 +34,7 @@ def sacct(args):
 def sacct_results(args):
     """Call 'sacct', parse and filter the results.
     """
-    lines, header = _parse_sacct()
+    lines, header = _parse_sacct(args)
     lines = _filter_lines(lines, header, state=args.state, partition=args.partition, name=args.name)
     return lines, header
 
@@ -98,10 +98,12 @@ def summary(args):
     return
 
 
-def _parse_sacct():
+def _parse_sacct(args):
     """Call the `sacct` command and parse the output.
     """
     command = _construct_sacct_command()
+    if args.verbose:
+        print("Running: '{}'\n\t'{}'".format(command, " ".join(command)))
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = p.stdout.read()
 
@@ -125,8 +127,10 @@ def _parse_sacct():
     return lines, header
 
 
-def _construct_sacct_command():
+def _construct_sacct_command(format=None, starttime=None):
     """Construct the command (list of strings) to call 'sacct' (using `subprocess.Popen`).
+
+    NOTE: currently 'format' does nothing... make it do... something...
     """
     # Determine the keys to include in the sacct results (i.e. sacct output format)
     use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
