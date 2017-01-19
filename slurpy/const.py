@@ -4,9 +4,12 @@
 META_WIDTH = 50
 SEP_CHAR = ", "
 
-SACCT_KEYS = ['JobID', 'JobName', 'State', 'Submit', 'Elapsed',
+SACCT_KEYS = ['JobID', 'JobName', 'State', 'Submit', 'Start', 'Elapsed',
               'AveVMSize', 'MaxVMSize', 'ReqMem', 'AveDiskRead', 'AveDiskWrite',
               'partition', 'nodelist']
+
+SACCT_KEYS_PRINT = ['JobID', 'JobName', 'State', 'Submit', 'Start', 'Elapsed',
+                    'partition']
 
 SQUEUE_KEYS = ['account', 'arrayjobid', 'arraytaskid', 'command', 'cores',
                'deadline', 'endtime', 'exit_code', 'groupid', 'groupname',
