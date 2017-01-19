@@ -17,6 +17,9 @@
 ## -------
 -   Added `--name` argument, 'sacct' results now filtered by job-name.
     -   Currently uses only a case-sensitive check, using 'in' (i.e. if the filtering parameter is inside the job-name, then it passes the check).
+-   `slurpy/sacct.py`
+    -   '_construct_sacct_command()'
+        -   New internal method to construct the sacct command to be called, allow optional arguments, etc.
 
 ## v0.2 - 2017/01/14
 ## -----------------

@@ -101,12 +101,7 @@ def summary(args):
 def _parse_sacct():
     """Call the `sacct` command and parse the output.
     """
-    # Determine the keys to include in the sacct results (i.e. sacct output format)
-    use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
-    keys = ",".join(use_keys)
-
-    # Get results from `sacct`
-    command = ['sacct', '--format', keys]
+    command = _construct_sacct_command()
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = p.stdout.read()
 
@@ -128,6 +123,18 @@ def _parse_sacct():
         lines.append(comps)
 
     return lines, header
+
+
+def _construct_sacct_command():
+    """Construct the command (list of strings) to call 'sacct' (using `subprocess.Popen`).
+    """
+    # Determine the keys to include in the sacct results (i.e. sacct output format)
+    use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
+    keys = ",".join(use_keys)
+
+    # Get results from `sacct`
+    command = ['sacct', '--format', keys]
+    return command
 
 
 def _parse_sacct_line(line, header):
@@ -199,3 +206,4 @@ def _parse_state_value(state):
         return None, None
 
     return state, idx
+
