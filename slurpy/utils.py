@@ -34,6 +34,13 @@ def print_lines_dicts(lines, header):
     return
 
 
+def _filter_fields_in_lines(lines, header, keys=None):
+    if keys is None:
+        return lines
+
+    return clean
+
+
 def _format_line(line, form):
     return form.format(*line.values())
 
