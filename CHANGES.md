@@ -17,6 +17,8 @@
 ## -------
 -   Added `--name` argument, 'sacct' results now filtered by job-name.
     -   Currently uses only a case-sensitive check, using 'in' (i.e. if the filtering parameter is inside the job-name, then it passes the check).
+-   Added `--sort` argument to sort 'sacct' results by the given field.
+    -   New method `sacct._sort_lines()` does this, called from `sacct.sacct_results()`.
 -   By default, printed output now only shows a subset of available parameters.  Use '--verbose' to include all of them.
     -   New method `utils._filter_fields_in_lines()` is called from within `utils.print_lines_dicts()`.
 -   `slurpy/sacct.py`

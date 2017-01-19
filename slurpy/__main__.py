@@ -48,6 +48,11 @@ def _init_argparse():
                         type=str, dest="state", default=None,
                         help="state to filter by (e.g. 'RUNNING', 'COMPLETED')")
 
+    parser.add_argument("--sort",
+                        type=str, dest="sort", default=None,
+                        help=("Sort 'sacct' results by the given parameter field.  "
+                              "Use `--sort=-KEY` to reverse-sort by 'KEY'."))
+
     parser.add_argument("--name",
                         type=str, dest="name", default=None,
                         help="job name to filter by")

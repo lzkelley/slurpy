@@ -35,7 +35,10 @@ def sacct_results(args):
     """Call 'sacct', parse and filter the results.
     """
     lines, header = _parse_sacct(args)
+    # Filter out undesired lines
     lines = _filter_lines(lines, header, state=args.state, partition=args.partition, name=args.name)
+    # Sort results
+    _sort_lines(lines, header, args)
     return lines, header
 
 
@@ -152,6 +155,19 @@ def _parse_sacct_line(line, header):
 
     return comps
 
+
+def _sort_lines(lines, header, args):
+    if args.sort is None:
+        return lines
+
+    sort = args.sort
+    rev = False
+    if sort.startswith('-'):
+        rev = True
+        sort = sort[1:]
+
+    lines.sort(key=lambda item:item[sort], reverse=rev)
+    return None
 
 def _filter_lines(lines, header, state=None, partition=None, name=None):
     """Filter the given lines based on some parameter (e.g. state).
