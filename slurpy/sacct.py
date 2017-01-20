@@ -148,8 +148,10 @@ def _parse_sacct_line(line, header):
     """Parse a single line of results from `sacct` with the given header.
     """
     num_keys = len(header)
+    # Break up in 'sacct'-output line based on constant number-of-character sections for each key
     _comps = [line[ii*(META_WIDTH+1):(ii+1)*(META_WIDTH+1)][:-1] for ii in range(num_keys)]
     comps = OrderedDict()
+    # Each line is a dict of key: value pairs, where the key is from the header line
     for key, val in zip(header, _comps):
         comps[key] = val.strip()
 
@@ -157,15 +159,20 @@ def _parse_sacct_line(line, header):
 
 
 def _sort_lines(lines, header, args):
+    """Sort the lines based on the `args.sort` parameter---matching one of the header keys.
+    """
+    # No sort parameter, do not sort
     if args.sort is None:
         return lines
 
     sort = args.sort
     rev = False
+    # If the sort parameter starts with '-', then reverse the sorting order
     if sort.startswith('-'):
         rev = True
         sort = sort[1:]
 
+    # Sort each line by the target key
     lines.sort(key=lambda item:item[sort], reverse=rev)
     return None
 
