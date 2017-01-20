@@ -20,6 +20,7 @@ import numpy as np
 import datetime
 
 from . import utils
+from . import const
 from slurpy.const import META_WIDTH, SACCT_KEYS, SEP_CHAR, STATE_KEYS
 
 
@@ -152,8 +153,13 @@ def _parse_sacct_line(line, header):
     _comps = [line[ii*(META_WIDTH+1):(ii+1)*(META_WIDTH+1)][:-1] for ii in range(num_keys)]
     comps = OrderedDict()
     # Each line is a dict of key: value pairs, where the key is from the header line
-    for key, val in zip(header, _comps):
-        comps[key] = val.strip()
+    for key, _val in zip(header, _comps):
+        val = _val.strip()
+        if const.REFORMAT_TIMES and key in const.SACCT_KEYS_TIMES:
+            match = const._REGEX_TIMES_PATTERN.match(val)
+            if match is not None and len(match.groups()) == 2:
+                val = const.REFORMAT_TIMES_SEP_CHAR.join(match.groups())
+        comps[key] = val
 
     return comps
 
