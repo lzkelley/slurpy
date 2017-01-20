@@ -82,7 +82,8 @@ def _calculate_formatting(lines, header):
             sizes[ii] = np.maximum(sizes[ii], len(val))
 
     # Create nice formatting string
-    form = const.SEP_CHAR.join("{{: >{sz}s}}".format(sz=ss) for ss in sizes)
+    sep = const.SEP_CHAR + " "*const.COLUMN_SPACING
+    form = sep.join("{{: >{sz}s}}".format(sz=ss) for ss in sizes)
     return form
 
 

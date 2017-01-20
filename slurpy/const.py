@@ -2,6 +2,7 @@
 """
 
 META_WIDTH = 50
+COLUMN_SPACING = 2
 SEP_CHAR = ", "
 
 SACCT_KEYS = ['JobID', 'JobName', 'State', 'Submit', 'Start', 'Elapsed',
