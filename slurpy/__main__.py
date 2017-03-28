@@ -2,10 +2,16 @@
 
 Default behavior is to run 'sacct' and print parsed output.
 """
+import datetime
 from slurpy import sacct, squeue, scancel, utils
 
 # Prompt the user to confirm before canceling jobs.
 _CANCEL_PROMPT = True
+# Default value for the `--start` argument.  Should either be `None`, or a float value that
+#    specifies how many days before today to set as the starting value.  For example,
+#    If now is `2017-03-28T17:00:00` then the value `-2.5` would set the start time to
+#    `2017-03-26T05:00:00`.
+_DEFAULT_ARG_START = -7.0
 
 
 def main():
@@ -38,6 +44,21 @@ def main():
 
 def _init_argparse():
     import argparse
+
+    # Determine Default Values
+    # ------------------------
+
+    # Default start time
+    if _DEFAULT_ARG_START is None:
+        def_start = None
+    #    Interpret `_DEFAULT_ARG_START` as a number of days in the past
+    else:
+        dt = datetime.datetime.now() + datetime.timedelta(days=_DEFAULT_ARG_START)
+        def_start = dt.strftime("%Y-%m-%dT%H:%M:%S")
+        # print("def_start = '{}'".format(def_start))
+
+    # Construct Argument Parser
+    # -------------------------
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-v", "--verbose",
@@ -49,8 +70,9 @@ def _init_argparse():
                         help="state to filter by (e.g. 'RUNNING', 'COMPLETED')")
 
     parser.add_argument("--start",
-                        type=str, dest="start", default=None,
-                        help="start time for `sacct` quieries (e.g. `--start 2017-01-01`).")
+                        type=str, dest="start", default=def_start,
+                        help=("start time for `sacct` quieries in the format "
+                              "'YYYY-MM-DD[THH:MM[:SS]]' (e.g. `--start 2017-01-01`)."))
 
     parser.add_argument("--id",
                         type=str, dest="jobid", default=None, nargs='*',

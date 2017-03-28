@@ -27,6 +27,8 @@
 -   `slurpy/sacct.py`
     -   `_construct_sacct_command()`
         -   New internal method to construct the sacct command to be called, allow optional arguments, etc.
+-   `slurpy/__main__.py`
+    -   Added the `_DEFAULT_ARG_START` internal parameter which determines the default value for the `--start` argument.  I set the current value to '-7.0', meaning the default start time is seven days in the past from whenever `slurpy` is run.
 
 
 ## v0.2 - 2017/01/14
