@@ -37,7 +37,7 @@ def sacct_results(args):
     """
     lines, header = _parse_sacct(args)
     # Filter out undesired lines
-    lines = _filter_lines(lines, header, state=args.state, partition=args.partition, name=args.name)
+    lines = _filter_lines(lines, header, args)
     # Sort results
     _sort_lines(lines, header, args)
     return lines, header
@@ -105,14 +105,14 @@ def summary(args):
 def _parse_sacct(args):
     """Call the `sacct` command and parse the output.
     """
-    command = _construct_sacct_command()
+    command = _construct_sacct_command(args)
     # if args.verbose:
     #     print("Running: '{}'\n\t'{}'".format(command, " ".join(command)))
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = p.stdout.read()
 
     # Parse results
-    # Convert from bytes to string
+    #   Convert from bytes to string
     raw_lines = text.decode('ascii')
     raw_lines = raw_lines.split('\n')
     header = raw_lines.pop(0)
@@ -131,10 +131,10 @@ def _parse_sacct(args):
     return lines, header
 
 
-def _construct_sacct_command(format=None, starttime=None):
+def _construct_sacct_command(args):
     """Construct the command (list of strings) to call 'sacct' (using `subprocess.Popen`).
 
-    NOTE: currently 'format' does nothing... make it do... something...
+    NOTE: currently `format` argument does nothing... make it do... something...
     """
     # Determine the keys to include in the sacct results (i.e. sacct output format)
     use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
@@ -142,6 +142,11 @@ def _construct_sacct_command(format=None, starttime=None):
 
     # Get results from `sacct`
     command = ['sacct', '--format', keys]
+    
+    # Add starttime
+    if args.start is not None:
+        command.extend(['--starttime', args.start])
+
     return command
 
 
@@ -182,7 +187,8 @@ def _sort_lines(lines, header, args):
     lines.sort(key=lambda item:item[sort], reverse=rev)
     return None
 
-def _filter_lines(lines, header, state=None, partition=None, name=None):
+
+def _filter_lines(lines, header, args):
     """Filter the given lines based on some parameter (e.g. state).
     """
     clean = list(lines)
@@ -191,28 +197,77 @@ def _filter_lines(lines, header, state=None, partition=None, name=None):
              if not (cc['JobID'].endswith('extern') or cc['JobID'].endswith('batch'))]
 
     # Filter by 'State'
-    clean = _filter_by(clean, state, 'State', header)
+    if args.state is not None:
+        clean = _filter_by(clean, args.state, 'State', header)
     # Filter by 'Partition'
-    clean = _filter_by(clean, partition, 'Partition', header)
+    if args.partition is not None:
+        clean = _filter_by(clean, args.partition, 'Partition', header)
 
     # Filter by job name
-    if name is not None:
-        clean = _filter_by_name(clean, name, header)
+    if args.name is not None:
+        clean = _filter_by_name(clean, args.name, header)
+
+    # Filter by job ID number
+    if args.jobid is not None:
+        clean = _filter_by_jobid(clean, args.jobid, header)
 
     return clean
 
 
 def _filter_by(line, var, key, header):
-    # If the filtering parameter is given (not None), and the key is in the header
-    if var is None:
-        return line
-
     if key in header:
         clean = [cc for cc in line if cc[key] == var]
         return clean
 
     print("WARNING: '{}' not in header: '{}'".format(key, header))
     return line
+
+
+def _filter_by_jobid(lines, idstr, header):
+    """Filter out lines with JobID numbers matching the input specification.
+
+    Currently the `idstr` specification can be:
+    - one or multiple ID numbers (comma or space separated)
+    - An interval of ID numbers in the form `LO_ID : HI_ID` (spaces are optional).
+    
+    Arguments
+    ---------
+    lines : (N,) list of dict
+    idstr : str
+        Specification of which ID numbers to include.
+    header : dict
+
+    Returns
+    -------
+    clean : (M,) list of dict
+
+    """
+    _ids = " ".join(idstr)
+    
+    # Parse the specification string for which jobID numbers to include
+    id_list = None
+    id_lo = None
+    id_hi = None
+
+    # Look for a range of values using ':', e.g. `84513996 : 84514000`
+    _ids = [ss.strip() for ss in _ids.split(':')]
+    if len(_ids) == 2:
+        id_lo = int(_ids[0])
+        id_hi = int(_ids[1])
+        # print("id_lo : '{}'".format(id_lo))
+        # print("id_hi : '{}'".format(id_hi))
+    elif len(_ids) == 1:
+        id_list = [tt for ss in _ids[0].split() for tt in ss.split(',')]
+        # Clean up each element and remove empty ones
+        id_list = [tt.strip() for tt in id_list if len(tt.strip()) > 0]
+        # print("id_list : '{}'".format(id_list))
+    else:
+        raise ValueError("Could not parse input jobids '{}'".format(idstr))
+
+    clean = [nn for nn in lines if (id_list is None) or (nn['JobID'] in id_list)]
+    clean = [nn for nn in clean if (id_lo is None) or (int(nn['JobID']) >= id_lo)]
+    clean = [nn for nn in clean if (id_hi is None) or (int(nn['JobID']) <= id_hi)]
+    return clean
 
 
 def _filter_by_name(lines, name, header):

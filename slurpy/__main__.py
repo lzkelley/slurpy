@@ -48,6 +48,15 @@ def _init_argparse():
                         type=str, dest="state", default=None,
                         help="state to filter by (e.g. 'RUNNING', 'COMPLETED')")
 
+    parser.add_argument("--start",
+                        type=str, dest="start", default=None,
+                        help="start time for `sacct` quieries (e.g. `--start 2017-01-01`).")
+
+    parser.add_argument("--id",
+                        type=str, dest="jobid", default=None, nargs='*',
+                        help=("JobID number to filter by "
+                              "(e.g. `--id 84513996`, `--id 84513996:84514000`"))
+
     parser.add_argument("--sort",
                         type=str, dest="sort", default=None,
                         help=("Sort 'sacct' results by the given parameter field.  "
