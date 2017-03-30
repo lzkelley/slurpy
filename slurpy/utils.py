@@ -10,11 +10,11 @@ Functions
 
 
 """
+import os
 import numpy as np
 from collections import OrderedDict
 
 from . import const
-# from . const import SEP_CHAR
 
 
 def print_lines_dicts(_lines, _header, args):
@@ -33,9 +33,22 @@ def print_lines_dicts(_lines, _header, args):
         keys = const.SACCT_KEYS_PRINT
     lines, header = _filter_fields_in_lines(_lines, _header, keys=keys)
 
+    # Only include the first/last some-number of lines
+    if args.head is not None or args.tail is not None:
+        hh = int(args.head) if (args.head is not None) else None
+        tt = int(args.tail) if (args.tail is not None) else None
+        num_lines = len(lines)
+        lines = [ll for ii, ll in enumerate(lines)
+                 if ((hh is None or ii < hh) or
+                     (tt is None or ii >= num_lines - tt))]
+
     # Calculate the proper formatting specification string
     form = _calculate_formatting(lines, header)
 
+    # If we are in 'watch' mode (with repeated output), then clear the screen before printing
+    #    This should happen here to minimize the delay between clearing and printing
+    if (args.watch is not None) and args.clear:
+        os.system('cls' if os.name == 'nt' else 'clear')
     # Print header
     print(form.format(*header))
     # Print each line

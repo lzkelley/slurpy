@@ -11,6 +11,7 @@
 -   Finish developing '--queue' argument.
 -   Filter jobs by submission time, or job ID number
 -   Make filter arguments accept lists (e.g. for name or state)
+-   Add ellipses lines before/after the printed output when using either the `--head` or `--tail` arguments.
 
 
 ## Current
@@ -21,6 +22,9 @@
     -   New method `sacct._sort_lines()` does this, called from `sacct.sacct_results()`.
 -   Added `--id` argument to filter by 'JobID' number.  Also works for canceling jobs.
     -   New method `sacct._filter_by_jobid()` does the filtering by parsing the command-line argument specification string.  This is called by `sacct._filter_lines()`.
+-   Added `--head` and `--tail` arguments to print only the first and/or last entries from `sacct`.  These are implemented in `utils.print_lines_dicts()`.
+-   Added `--watch` argument to repeat execution every X interval (optionally provided with the argument).  This is implemented in `__main__.main()` using a `time.sleep()` call before rerunning the `main()` routine.  Threading might improve this, but I had trouble with that approach.
+    -   Also added an `args.clear` parameter and associated behavior in `utils.print_lines_dicts()`.  Just before printing the output dictionaries, if the code is in 'watch' mode and `args.clear == True`, then the screen will be cleared right before printing output.
 -   By default, reformat the times-strings output by sacct (replace 'T' separator with optional alternative character.  Set by parameters in `const.py`, with code in `sacct._parse_sacct_line()`.
 -   By default, printed output now only shows a subset of available parameters.  Use '--verbose' to include all of them.
     -   New method `utils._filter_fields_in_lines()` is called from within `utils.print_lines_dicts()`.
