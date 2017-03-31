@@ -4,18 +4,20 @@
 
 ## To-Do
 ## -----
--   Add a builtin 'watch' sub-command, to continually re-quiery every N seconds.
--   Look at older history with `sacct --starttime`
 -   Add tests.
 -   Change '--cancel' to 'cancel' subcommand.
 -   Finish developing '--queue' argument.
--   Filter jobs by submission time, or job ID number
 -   Make filter arguments accept lists (e.g. for name or state)
 -   Add ellipses lines before/after the printed output when using either the `--head` or `--tail` arguments.
 
 
 ## Current
 ## -------
+
+
+
+## v0.3 - 2017/03/31
+## -----------------
 -   Added `--name` argument, 'sacct' results now filtered by job-name.
     -   Currently uses only a case-sensitive check, using 'in' (i.e. if the filtering parameter is inside the job-name, then it passes the check).
 -   Added `--sort` argument to sort 'sacct' results by the given field.
