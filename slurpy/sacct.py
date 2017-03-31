@@ -17,11 +17,12 @@ Functions
 import subprocess
 from collections import OrderedDict
 import numpy as np
-import datetime
+import os
+# import datetime
 
 from . import utils
 from . import const
-from slurpy.const import META_WIDTH, SACCT_KEYS, SEP_CHAR, STATE_KEYS
+from slurpy.const import META_WIDTH, SACCT_KEYS, STATE_KEYS
 
 
 def sacct(args):
@@ -86,6 +87,10 @@ def summary(args):
         dur = dd*24.0 + hh + mm/60.0 + ss/3600.0
         durations[idx].append(dur)
 
+    # If we are in 'watch' mode (with repeated output), then clear the screen before printing
+    #    This should happen here to minimize the delay between clearing and printing
+    if (args.watch is not None) and args.clear:
+        os.system('cls' if os.name == 'nt' else 'clear')
     # Report results
     for ss, cc, dd in zip(STATE_KEYS, state_counts, durations):
         # Number of jobs in each state
@@ -142,7 +147,7 @@ def _construct_sacct_command(args):
 
     # Get results from `sacct`
     command = ['sacct', '--format', keys]
-    
+
     # Add starttime
     if args.start is not None:
         command.extend(['--starttime', args.start])
@@ -184,7 +189,7 @@ def _sort_lines(lines, header, args):
         sort = sort[1:]
 
     # Sort each line by the target key
-    lines.sort(key=lambda item:item[sort], reverse=rev)
+    lines.sort(key=lambda item: item[sort], reverse=rev)
     return None
 
 
@@ -229,7 +234,7 @@ def _filter_by_jobid(lines, idstr, header):
     Currently the `idstr` specification can be:
     - one or multiple ID numbers (comma or space separated)
     - An interval of ID numbers in the form `LO_ID : HI_ID` (spaces are optional).
-    
+
     Arguments
     ---------
     lines : (N,) list of dict
@@ -243,7 +248,7 @@ def _filter_by_jobid(lines, idstr, header):
 
     """
     _ids = " ".join(idstr)
-    
+
     # Parse the specification string for which jobID numbers to include
     id_list = None
     id_lo = None

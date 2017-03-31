@@ -2,7 +2,7 @@
 
 Default behavior is to run 'sacct' and print parsed output.
 """
-import os
+# import os
 import datetime
 from slurpy import sacct, squeue, scancel, utils
 
@@ -104,11 +104,11 @@ def _init_argparse():
         help="job name to filter by")
 
     parser.add_argument(
-        "--summary", action="store_true", dest="summary", default=False,
+        "-s", "--summary", action="store_true", dest="summary", default=False,
         help="Print a summary from the current 'sacct' results.")
 
     parser.add_argument(
-        "--watch", nargs='?', dest="watch", default=None, const=4,
+        "-w", "--watch", nargs='?', dest="watch", type=int, default=None, const=4,
         help=("Print continuous output refreshed every given internal in seconds (default: 4)"))
 
     parser.add_argument(
