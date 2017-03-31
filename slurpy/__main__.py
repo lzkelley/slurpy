@@ -19,6 +19,8 @@ def main(args=None, thread=False):
     if args is None:
         args = _init_argparse()
 
+    # Cancel / Kill Jobs
+    # ------------------
     if args.cancel:
         if _CANCEL_PROMPT:
             lines, header = sacct.sacct_results(args)
@@ -35,6 +37,8 @@ def main(args=None, thread=False):
         scancel.scancel(args)
         return
 
+    # Information sacct, summary, and squeue operations
+    # -------------------------------------------------
     if args.summary:
         sacct.summary(args)
     elif args.queue:
@@ -42,10 +46,16 @@ def main(args=None, thread=False):
     else:
         sacct.sacct(args)
 
+    # 'Watch' Output: repeatedly printed
+    # ----------------------------------
+    # Repeatedly call `main` to keep producing new output
     if (args.watch is not None) and (not thread):
         import time
-        time.sleep(args.watch)
-        main(args, thread=False)
+        # Start look to keep re-calling this (the `main`) method repeatedly every interval
+        while True:
+            time.sleep(args.watch)
+            # set `thread` to True so that subsequent calls don't start their own loops and timers.
+            main(args, thread=True)
 
     return
 
