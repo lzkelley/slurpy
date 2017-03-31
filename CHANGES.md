@@ -20,6 +20,7 @@
 ## -----------------
 -   Added `--name` argument, 'sacct' results now filtered by job-name.
     -   Currently uses only a case-sensitive check, using 'in' (i.e. if the filtering parameter is inside the job-name, then it passes the check).
+-   Added `--starttime` command to show all jobs after a certain submission time.
 -   Added `--sort` argument to sort 'sacct' results by the given field.
     -   New method `sacct._sort_lines()` does this, called from `sacct.sacct_results()`.
 -   Added `--id` argument to filter by 'JobID' number.  Also works for canceling jobs.
