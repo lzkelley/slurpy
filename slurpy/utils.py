@@ -156,7 +156,7 @@ def init_log(args):
     if args.debug:
         str_lvl = logging.DEBUG
     elif args.verbose:
-        str_lvl = logging.VERBOSE
+        str_lvl = logging.INFO
     else:
         str_lvl = logging.WARNING
 
