@@ -13,9 +13,17 @@
 
 ## Current
 ## -------
+-   Introduced usage of a `logging.Logger` instance named `log`.  This shouldn't necessarily replace usage of `print` everywhere (for example the actual `slurpy` output should perhaps still just use `print`), but it should be used when optional output will be desired based on verbose usage or debugging.
+    -   `slurpy/utils.py` has the log initialization routine.
+    -   Introduced the `--DEBUG` flag to produce extensive output for debugging purposes.  Stuff that was previously only printed when `args.verbose` was true now uses the `log.info` level of output.
+-   Because `sacct` is weird about the `--starttime` parameter (in particular it shows all jobs which are in *any* state for that starttime... i.e. not specificating having *started* after that time), I've introduced an additional filter called from `sacct._filter_lines()` to actually filter results by the start time.
+
 -   `slurpy/utils.py`
-    -    `init_log()` [new-function]
+    -   `init_log()` [new-function]
         -   Wrapper to construct a logger object from `zcode.inout` module.  Sets the logging level based on `args` arguments, with the logging-file turned off.
+-   `slurpy/sacct.py`
+    -   `_filter_by_time()` [new-function]
+        -   Filter the `sacct` output based on the `Start` parameter (partially filtered by the `--startime` sacct argument.
 
 
 ## v0.3 - 2017/03/31
