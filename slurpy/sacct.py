@@ -16,6 +16,7 @@ Functions
 
 import subprocess
 from collections import OrderedDict
+import datetime
 import numpy as np
 import os
 # import datetime
@@ -28,7 +29,9 @@ from slurpy.const import META_WIDTH, SACCT_KEYS, STATE_KEYS
 def sacct(args):
     """Call the 'sacct', parse and filter results and print to output.
     """
+    args.log.debug("sacct.sacct()")
     lines, header = sacct_results(args)
+    args.log.debug("Retrieved header and {} lines.".format(len(lines)))
     utils.print_lines_dicts(lines, header, args)
     return
 
@@ -36,6 +39,7 @@ def sacct(args):
 def sacct_results(args):
     """Call 'sacct', parse and filter the results.
     """
+    args.log.debug("sacct.sacct_results()")
     lines, header = _parse_sacct(args)
     # Filter out undesired lines
     lines = _filter_lines(lines, header, args)
@@ -47,6 +51,7 @@ def sacct_results(args):
 def summary(args):
     """Construct a summary of jobs described by the sacct command.
     """
+    args.log.debug("sacct.summary()")
     verbose = args.verbose
     # Call `sacct`, parse results and filter output
     lines, header = sacct_results(args)
@@ -110,6 +115,7 @@ def summary(args):
 def _parse_sacct(args):
     """Call the `sacct` command and parse the output.
     """
+    args.log.debug("sacct._parse_sacct()")
     command = _construct_sacct_command(args)
     # if args.verbose:
     #     print("Running: '{}'\n\t'{}'".format(command, " ".join(command)))
@@ -141,6 +147,7 @@ def _construct_sacct_command(args):
 
     NOTE: currently `format` argument does nothing... make it do... something...
     """
+    args.log.debug("sacct._construct_sacct_command()")
     # Determine the keys to include in the sacct results (i.e. sacct output format)
     use_keys = [kk + "%{}".format(META_WIDTH) for kk in SACCT_KEYS]
     keys = ",".join(use_keys)
@@ -148,9 +155,14 @@ def _construct_sacct_command(args):
     # Get results from `sacct`
     command = ['sacct', '--format', keys]
 
+    if args.debug:
+        print("command: '{}'".format(command))
+
     # Add starttime
     if args.start is not None:
         command.extend(['--starttime', args.start])
+        if args.debug:
+            print("command: '{}'".format(command))
 
     return command
 
@@ -177,6 +189,7 @@ def _parse_sacct_line(line, header):
 def _sort_lines(lines, header, args):
     """Sort the lines based on the `args.sort` parameter---matching one of the header keys.
     """
+    args.log.debug("sacct._sort_lines()")
     # No sort parameter, do not sort
     if args.sort is None:
         return lines
@@ -196,25 +209,48 @@ def _sort_lines(lines, header, args):
 def _filter_lines(lines, header, args):
     """Filter the given lines based on some parameter (e.g. state).
     """
+    args.log.debug("sacct._filter_lines()")
     clean = list(lines)
+    num = len(clean)
+    args.log.debug("filtering from '{}' lines".format(num))
+
     # Remove 'extern' and 'batch' entries
     clean = [cc for cc in clean
              if not (cc['JobID'].endswith('extern') or cc['JobID'].endswith('batch'))]
+    args.log.debug("{}/{} interesting lines".format(len(clean), num))
+
+    def _log(cln, num, str):
+        args.log.info("{}/{} {}".format(len(cln), num, str))
 
     # Filter by 'State'
     if args.state is not None:
+        _num = len(clean)
         clean = _filter_by(clean, args.state, 'State', header)
+        _log(clean, _num, "selecting for `State`")
+
     # Filter by 'Partition'
     if args.partition is not None:
+        _num = len(clean)
         clean = _filter_by(clean, args.partition, 'Partition', header)
+        _log(clean, _num, "selecting for `Partition`")
 
     # Filter by job name
     if args.name is not None:
+        _num = len(clean)
         clean = _filter_by_name(clean, args.name, header)
+        _log(clean, _num, "selecting for `JobName`")
 
     # Filter by job ID number
     if args.jobid is not None:
+        _num = len(clean)
         clean = _filter_by_jobid(clean, args.jobid, header)
+        _log(clean, _num, "selecting for `JobID`")
+
+    # Filter by start-time
+    if args.start is not None:
+        _num = len(clean)
+        clean = _filter_by_time(clean, args.start, header, args.log)
+        _log(clean, _num, "selecting for `Start`")
 
     return clean
 
@@ -279,6 +315,33 @@ def _filter_by_name(lines, name, header):
     if name is None:
         return lines
     clean = [nn for nn in lines if name in nn['JobName']]
+    return clean
+
+
+def _filter_by_time(lines, start, header, log):
+    log.debug("sacct._filter_by_time()")
+
+    if start is None:
+        log.debug("`start` is None, returning all")
+        return lines
+
+    # If it looks like there are times included
+    if len(start.split(" ")) == 2:
+        form = "%Y-%m-%d %H:%M:%S"
+    elif len(start.split("T")) == 2:
+        form = "%Y-%m-%dT%H:%M:%S"
+    else:
+        form = "%Y-%m-%d"
+
+    try:
+        dt = datetime.datetime.strptime(start, form)
+        log.debug("`start` = '{}' ==> `dt` = '{}'".format(start, dt))
+    except:
+        log.error("Could not format `start`='{}', with `form`='{}'".format(start, form))
+        return lines
+
+    clean = [nn for nn in lines
+             if datetime.datetime.strptime(nn['Start'], "%Y-%m-%d %H:%M:%S") > dt]
     return clean
 
 
