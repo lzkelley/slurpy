@@ -13,7 +13,9 @@
 
 ## Current
 ## -------
-
+-   `slurpy/utils.py`
+    -    `init_log()` [new-function]
+        -   Wrapper to construct a logger object from `zcode.inout` module.  Sets the logging level based on `args` arguments, with the logging-file turned off.
 
 
 ## v0.3 - 2017/03/31

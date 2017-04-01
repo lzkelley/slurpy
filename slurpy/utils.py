@@ -12,7 +12,10 @@ Functions
 """
 import os
 import numpy as np
+import logging
 from collections import OrderedDict
+
+from zcode import inout as zio
 
 from . import const
 
@@ -86,7 +89,6 @@ def _calculate_formatting(lines, header):
     """
     lines = np.atleast_1d(lines)
 
-    num_keys = len(header)
     # Find the maximum length of each component of each line
     #    Start with the size of the header values
     sizes = [len(hh) for hh in header]
@@ -134,3 +136,30 @@ def prompt_yes_no(question, default="no"):
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
+
+
+def init_log(args):
+    """Initialize a `logging.Logger` object for general output.
+
+    Arguments
+    ---------
+    args : argparse arguments
+        Input arguments, determines the logging level based on `args.debug` and `args.verbose`.
+
+    Returns
+    -------
+    log : `logging.Logger`
+        Logging instance.
+
+    """
+    # Determine output level for stream-log
+    if args.debug:
+        str_lvl = logging.DEBUG
+    elif args.verbose:
+        str_lvl = logging.VERBOSE
+    else:
+        str_lvl = logging.WARNING
+
+    log = zio.get_logger(
+        'slurpy_log', level_stream=str_lvl, level_file=None, tofile=None, tostr=True)
+    return log
