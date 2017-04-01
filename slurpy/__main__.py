@@ -18,43 +18,56 @@ _DEFAULT_ARG_START = -7.0
 def main(args=None, thread=False):
     if args is None:
         args = _init_argparse()
+    log = utils.init_log(args)
+    # Attach the log to `args` for convenience
+    args.log = log
+    log.debug("\nslurpy\n")
+    log.debug("RUNNING IN DEBUG MODE\n")
+    log.debug("args=\n{}".format(args))
 
     # Cancel / Kill Jobs
     # ------------------
     if args.cancel:
+        log.debug("mode: 'cancel', prompt: '{}'".format(_CANCEL_PROMPT))
         if _CANCEL_PROMPT:
             lines, header = sacct.sacct_results(args)
             # Print the jobs about to be canceled
             if args.verbose:
-                print("\nCancel would end the following jobs:\n")
+                log.info("\nCancel would end the following jobs:\n")
                 utils.print_lines_dicts(lines, header, args)
                 print("")
             prompt = "Are you sure you want to cancel {} jobs?".format(len(lines))
             if not utils.prompt_yes_no(prompt, default='no'):
-                print("Exiting.")
+                log.warning("Exiting.")
                 return
 
+        log.debug("Running `scancel`.")
         scancel.scancel(args)
         return
 
     # Information sacct, summary, and squeue operations
     # -------------------------------------------------
     if args.summary:
+        log.debug("Running `summary`")
         sacct.summary(args)
     elif args.queue:
+        log.debug("Running `squeue`")
         squeue.squeue(args)
     else:
+        log.debug("Running `sacct`")
         sacct.sacct(args)
 
     # 'Watch' Output: repeatedly printed
     # ----------------------------------
     # Repeatedly call `main` to keep producing new output
     if (args.watch is not None) and (not thread):
+        log.debug("Entering 'watch' mode.")
         import time
         # Start look to keep re-calling this (the `main`) method repeatedly every interval
         while True:
             time.sleep(args.watch)
             # set `thread` to True so that subsequent calls don't start their own loops and timers.
+            log.debug("Re-running `main`")
             main(args, thread=True)
 
     return
@@ -82,6 +95,10 @@ def _init_argparse():
     parser.add_argument(
         "-v", "--verbose", action="store_true", dest="verbose", default=False,
         help="Extended output.")
+
+    parser.add_argument(
+        "--DEBUG", action="store_true", dest="debug", default=False,
+        help="Lots of output for debugging purposes only.")
 
     parser.add_argument(
         "--head", nargs='?', dest="head", default=None, const=10,
