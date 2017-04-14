@@ -11,11 +11,7 @@ Functions
 
 """
 import os
-import numpy as np
-import logging
 from collections import OrderedDict
-
-from zcode import inout as zio
 
 from . import const
 
@@ -87,6 +83,7 @@ def _format_line(line, form):
 def _calculate_formatting(lines, header):
     """Construct an appropriately formatted string to print lines.
     """
+    import numpy as np
     lines = np.atleast_1d(lines)
 
     # Find the maximum length of each component of each line
@@ -152,6 +149,9 @@ def init_log(args):
         Logging instance.
 
     """
+    import logging
+    from zcode.inout import log as zlog
+
     # Determine output level for stream-log
     if args.debug:
         str_lvl = logging.DEBUG
@@ -160,6 +160,6 @@ def init_log(args):
     else:
         str_lvl = logging.WARNING
 
-    log = zio.get_logger(
+    my_log = zlog.get_logger(
         'slurpy_log', level_stream=str_lvl, level_file=None, tofile=None, tostr=True)
-    return log
+    return my_log

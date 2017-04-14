@@ -14,12 +14,7 @@ Functions
 -   _parse_state_value    - Retrieve the index corresponding to the given state.
 """
 
-import subprocess
 from collections import OrderedDict
-import datetime
-import numpy as np
-import os
-# import datetime
 
 from . import utils
 from . import const
@@ -51,6 +46,7 @@ def sacct_results(args):
 def summary(args):
     """Construct a summary of jobs described by the sacct command.
     """
+    import numpy as np
     args.log.debug("sacct.summary()")
     verbose = args.verbose
     # Call `sacct`, parse results and filter output
@@ -95,6 +91,7 @@ def summary(args):
     # If we are in 'watch' mode (with repeated output), then clear the screen before printing
     #    This should happen here to minimize the delay between clearing and printing
     if (args.watch is not None) and args.clear:
+        import os
         os.system('cls' if os.name == 'nt' else 'clear')
     # Report results
     for ss, cc, dd in zip(STATE_KEYS, state_counts, durations):
@@ -115,10 +112,9 @@ def summary(args):
 def _parse_sacct(args):
     """Call the `sacct` command and parse the output.
     """
+    import subprocess
     args.log.debug("sacct._parse_sacct()")
     command = _construct_sacct_command(args)
-    # if args.verbose:
-    #     print("Running: '{}'\n\t'{}'".format(command, " ".join(command)))
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = p.stdout.read()
 
@@ -249,7 +245,10 @@ def _filter_lines(lines, header, args):
     # Filter by start-time
     if args.start is not None:
         _num = len(clean)
-        clean = _filter_by_time(clean, args.start, header, args.log)
+        try:
+            clean = _filter_by_time(clean, args.start, header, args.log)
+        except:
+            args.log.error("ERROR FILTERING BY TIME!")
         _log(clean, _num, "selecting for `Start`")
 
     return clean
@@ -325,6 +324,8 @@ def _filter_by_time(lines, start, header, log):
         log.debug("`start` is None, returning all")
         return lines
 
+    import datetime
+
     # If it looks like there are times included
     if len(start.split(" ")) == 2:
         form = "%Y-%m-%d %H:%M:%S"
@@ -340,8 +341,18 @@ def _filter_by_time(lines, start, header, log):
         log.error("Could not format `start`='{}', with `form`='{}'".format(start, form))
         return lines
 
-    clean = [nn for nn in lines
-             if datetime.datetime.strptime(nn['Start'], "%Y-%m-%d %H:%M:%S") > dt]
+    # Sometimes (always if 'PENDING'??) the 'Start' parameter returns 'Unknown')
+    try:
+        clean = [nn for nn in lines
+                 if datetime.datetime.strptime(nn['Start'], "%Y-%m-%d %H:%M:%S") > dt]
+    # Try filtering by the 'Submit' parameter instead
+    except Exception as err:
+        log.debug("ERROR: filtering by 'Start' failed: '{}'".format(str(err)))
+        log.debug("Trying 'Submit'")
+        clean = [nn for nn in lines
+                 if datetime.datetime.strptime(nn['Submit'], "%Y-%m-%d %H:%M:%S") > dt]
+        log.debug("... 'Submit' succeeded.")
+
     return clean
 
 

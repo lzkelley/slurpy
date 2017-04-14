@@ -2,9 +2,7 @@
 
 Default behavior is to run 'sacct' and print parsed output.
 """
-# import os
-import datetime
-from slurpy import sacct, squeue, scancel, utils
+from slurpy import sacct, utils
 
 # Prompt the user to confirm before canceling jobs.
 _CANCEL_PROMPT = True
@@ -41,6 +39,7 @@ def main(args=None, thread=False):
                 log.warning("Exiting.")
                 return
 
+        from .import scancel
         log.debug("Running `scancel`.")
         scancel.scancel(args)
         return
@@ -52,6 +51,7 @@ def main(args=None, thread=False):
         sacct.summary(args)
     elif args.queue:
         log.debug("Running `squeue`")
+        from . import squeue
         squeue.squeue(args)
     else:
         log.debug("Running `sacct`")
@@ -84,6 +84,7 @@ def _init_argparse():
         def_start = None
     #    Interpret `_DEFAULT_ARG_START` as a number of days in the past
     else:
+        import datetime
         dt = datetime.datetime.now() + datetime.timedelta(days=_DEFAULT_ARG_START)
         def_start = dt.strftime("%Y-%m-%dT%H:%M:%S")
         # print("def_start = '{}'".format(def_start))
