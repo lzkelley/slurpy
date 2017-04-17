@@ -163,3 +163,8 @@ def init_log(args):
     my_log = zlog.get_logger(
         'slurpy_log', level_stream=str_lvl, level_file=None, tofile=None, tostr=True)
     return my_log
+
+
+def _stats(vec):
+    import numpy as np
+    return np.min(vec), np.max(vec), np.median(vec)
