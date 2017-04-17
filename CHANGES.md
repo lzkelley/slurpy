@@ -22,6 +22,8 @@
     -   `init_log()` [new-function]
         -   Wrapper to construct a logger object from `zcode.inout` module.  Sets the logging level based on `args` arguments, with the logging-file turned off.
 -   `slurpy/sacct.py`
+    -   `summary()`
+        -   In verbose summary, for jobs in the 'PENDING' state, report the wait times (i.e. time since submission) instead of the run times (zero).
     -   `_filter_by_time()` [new-function]
         -   Filter the `sacct` output based on the `Start` parameter (partially filtered by the `--startime` sacct argument.
 

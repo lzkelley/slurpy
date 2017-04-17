@@ -47,6 +47,8 @@ def summary(args):
     """Construct a summary of jobs described by the sacct command.
     """
     import numpy as np
+    from zcode import math as zmath
+    import datetime
     args.log.debug("sacct.summary()")
     verbose = args.verbose
     # Call `sacct`, parse results and filter output
@@ -57,9 +59,10 @@ def summary(args):
     state_counts = np.zeros(num_states, dtype=int)
     # Duration of each job in each state
     durations = [[] for ii in range(num_states)]
+    # Time since submit time
+    pending_durations = []
 
     # Iterate over each job
-    # ---------------------
     for ii, ll in enumerate(lines):
         # Find the state of this job
         state, idx = _parse_state_value(ll['State'])
@@ -70,6 +73,7 @@ def summary(args):
         state_counts[idx] += 1
 
         # Store the elapsed duration of time
+        # ----------------------------------
         # Format: `[dd-]hh:mm:ss`
         elap = ll['Elapsed']
         try:
@@ -81,12 +85,30 @@ def summary(args):
             else:
                 dd = 0.0
             hh, mm, ss = [int(ee) for ee in elap.split(':')]
-        except:
-            print("sacct.summary(): Error - split failed on '{}'".format(elap))
+        except Exception as err:
+            args.log.error("sacct.summary(): Error - split failed on Elapsed: '{}'".format(elap))
+            args.log.error("ERROR: '{}'".format(str(err)))
             raise
         # Convert durations to hours and store
         dur = dd*24.0 + hh + mm/60.0 + ss/3600.0
         durations[idx].append(dur)
+
+        # Store the time since submission
+        # -------------------------------
+        if state == 'PENDING':
+            # Format: `2017-04-12 15:31:10`
+            subm = ll['Submit']
+            # Get the current time as a decimal year
+            now = zmath.datetime_to_decimal_year(datetime.datetime.now())
+            try:
+                # Separate the date and time portions
+                _st = zmath.datetime_to_decimal_year(subm)
+                # Convert from years to hours
+                pending_durations.append((now - _st) * 365 * 24)
+            except Exception as err:
+                args.log.error("sacct.summary(): Error - split failed on Submit: '{}'".format(subm))
+                args.log.error("ERROR: '{}'".format(str(err)))
+                raise
 
     # If we are in 'watch' mode (with repeated output), then clear the screen before printing
     #    This should happen here to minimize the delay between clearing and printing
@@ -99,12 +121,21 @@ def summary(args):
         print("\t'{}': {}".format(ss, cc))
         # If verbose is enabled
         if verbose:
-            # min, max, and median elapsed time for each state.
-            if len(dd):
-                min, max, med = np.min(dd), np.max(dd), np.median(dd)
+            prep = ''
+            post = ''
+            # If state is 'Pending', use wait times
+            if ss == 'PENDING':
+                _min, _max, _med = utils._stats(pending_durations)
+                post = ' (wait times)'
             else:
-                min, max, med = 0.0, 0.0, 0.0
-            print("\t\tmin: {:8.4f} [hr], max: {:8.4f} [hr], med: {:8.4f} [hr]".format(min, max, med))
+                prep = ''
+                # min, max, and median elapsed time for each state.
+                if len(dd):
+                    _min, _max, _med = utils._stats(dd)
+                else:
+                    _min, _max, _med = 0.0, 0.0, 0.0
+            print("\t\t{}min: {:8.4f} [hr], max: {:8.4f} [hr], med: {:8.4f} [hr]{}".format(
+                prep, _min, _max, _med, post))
 
     return
 
