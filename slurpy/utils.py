@@ -166,5 +166,7 @@ def init_log(args):
 
 
 def _stats(vec):
+    if len(vec) == 0:
+        return 0.0, 0.0, 0.0
     import numpy as np
     return np.min(vec), np.max(vec), np.median(vec)
