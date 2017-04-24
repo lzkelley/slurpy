@@ -59,6 +59,8 @@ def summary(args):
     state_counts = np.zeros(num_states, dtype=int)
     # Duration of each job in each state
     durations = [[] for ii in range(num_states)]
+    submit_first = [None for ii in range(num_states)]
+    submit_last = [None for ii in range(num_states)]
     # Time since submit time
     pending_durations = []
 
@@ -93,20 +95,28 @@ def summary(args):
         dur = dd*24.0 + hh + mm/60.0 + ss/3600.0
         durations[idx].append(dur)
 
+        # Format: `2017-04-12 15:31:10`
+        submit = ll['Submit']
+        submit_dt = datetime.datetime.strptime(submit, '%Y-%m-%d %H:%M:%S')
+        # Store earlier submit time
+        if submit_first[idx] is None or submit_first[idx] > submit_dt:
+            submit_first[idx] = submit_dt
+        # Store latest submit time
+        if submit_last[idx] is None or submit_last[idx] < submit_dt:
+            submit_last[idx] = submit_dt
+
         # Store the time since submission
         # -------------------------------
         if state == 'PENDING':
-            # Format: `2017-04-12 15:31:10`
-            subm = ll['Submit']
             # Get the current time as a decimal year
             now = zmath.datetime_to_decimal_year(datetime.datetime.now())
             try:
                 # Separate the date and time portions
-                _st = zmath.datetime_to_decimal_year(subm)
+                _subm = zmath.datetime_to_decimal_year(submit_dt)
                 # Convert from years to hours
-                pending_durations.append((now - _st) * 365 * 24)
+                pending_durations.append((now - _subm) * 365 * 24)
             except Exception as err:
-                args.log.error("sacct.summary(): Error - split failed on Submit: '{}'".format(subm))
+                args.log.error("sacct.summary(): Error - split failed on Submit: '{}'".format(submit))
                 args.log.error("ERROR: '{}'".format(str(err)))
                 raise
 
@@ -116,11 +126,14 @@ def summary(args):
         import os
         os.system('cls' if os.name == 'nt' else 'clear')
     # Report results
-    for ss, cc, dd in zip(STATE_KEYS, state_counts, durations):
+    for idx, (ss, cc, dd) in enumerate(zip(STATE_KEYS, state_counts, durations)):
         # Number of jobs in each state
         print("\t'{}': {}".format(ss, cc))
         # If verbose is enabled
         if verbose:
+            if cc == 0:
+                print()
+                continue
             prep = ''
             post = ''
             # If state is 'Pending', use wait times
@@ -136,6 +149,7 @@ def summary(args):
                     _min, _max, _med = 0.0, 0.0, 0.0
             print("\t\t{}min: {:8.4f} [hr], max: {:8.4f} [hr], med: {:8.4f} [hr]{}".format(
                 prep, _min, _max, _med, post))
+            print("\t\t{}, {} (submit times)".format(submit_first[idx], submit_last[idx]))
 
     return
 

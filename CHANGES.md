@@ -24,6 +24,8 @@
 -   `slurpy/sacct.py`
     -   `summary()`
         -   In verbose summary, for jobs in the 'PENDING' state, report the wait times (i.e. time since submission) instead of the run times (zero).
+        -   In verbose summary, print the earlier and latest submission times for each state.
+        -   If no jobs are in a given state, print a blank verbose line instead of '0.0' times.
     -   `_filter_by_time()` [new-function]
         -   Filter the `sacct` output based on the `Start` parameter (partially filtered by the `--startime` sacct argument.
 
