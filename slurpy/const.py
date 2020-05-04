@@ -11,9 +11,12 @@ SEP_CHAR = " "
 REFORMAT_TIMES = True
 REFORMAT_TIMES_SEP_CHAR = " "
 
+# SACCT_KEYS = ['JobID', 'JobName', 'State', 'Submit', 'Start', 'Elapsed',
+#               'AveVMSize', 'MaxVMSize', 'ReqMem', 'AveDiskRead', 'AveDiskWrite',
+#               'partition', 'nodelist']
 SACCT_KEYS = ['JobID', 'JobName', 'State', 'Submit', 'Start', 'Elapsed',
               'AveVMSize', 'MaxVMSize', 'ReqMem', 'AveDiskRead', 'AveDiskWrite',
-              'partition', 'nodelist']
+              'partition']
 
 SACCT_KEYS_TIMES = ['Submit', 'Start', 'Elapsed']
 
@@ -29,6 +32,8 @@ SQUEUE_KEYS = ['account', 'arrayjobid', 'arraytaskid', 'command', 'cores',
 DEF_PARTITIONS = ['hernquist', 'itccluster']
 
 STATE_KEYS = ['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT']
+STATE_KEYS_FAILED = ['FAILED', 'CANCELLED', 'TIMEOUT']
+STATE_KEYS_OKAY = ['PENDING', 'RUNNING', 'COMPLETED']
 
 REGEX_TIMES = '(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})'
 

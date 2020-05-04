@@ -36,6 +36,15 @@ def sacct_results(args):
     """
     args.log.debug("sacct.sacct_results()")
     lines, header = _parse_sacct(args)
+    # Remove the lines with just 'batch' and 'extern'
+    lines = _remove_meta_lines(lines, args)
+    if args.replace:
+        num_beg = len(lines)
+        args.log.info("Replacing entries...")
+        lines = _replace_lines(lines, header, args)
+        num_end = len(lines)
+        args.log.debug("Replaced {} entries.".format(num_beg-num_end))
+    # return
     # Filter out undesired lines
     lines = _filter_lines(lines, header, args)
     # Sort results
@@ -48,6 +57,8 @@ def summary(args):
     """
     import numpy as np
     from zcode import math as zmath
+    import zcode.math.time  # noqa
+
     import datetime
     args.log.debug("sacct.summary()")
     verbose = args.verbose
@@ -109,10 +120,10 @@ def summary(args):
         # -------------------------------
         if state == 'PENDING':
             # Get the current time as a decimal year
-            now = zmath.datetime_to_decimal_year(datetime.datetime.now())
+            now = zmath.time.to_decimal_year(datetime.datetime.now())
             try:
                 # Separate the date and time portions
-                _subm = zmath.datetime_to_decimal_year(submit_dt)
+                _subm = zmath.time.to_decimal_year(submit_dt)
                 # Convert from years to hours
                 pending_durations.append((now - _subm) * 365 * 24)
             except Exception as err:
@@ -247,6 +258,26 @@ def _sort_lines(lines, header, args):
     return None
 
 
+def _remove_meta_lines(lines, args):
+    """Remove 'extern' and 'batch' entries
+    """
+    args.log.debug("sacct._remove_meta_lines()")
+    num = len(lines)
+
+    def _valid_jobid(jobid):
+        if jobid.endswith('extern'):
+            return False
+        if jobid.endswith('batch'):
+            return False
+        if jobid.endswith('.0'):
+            return False
+        return True
+
+    clean = [cc for cc in lines if _valid_jobid(cc['JobID'])]
+    args.log.debug("{}/{} interesting lines".format(len(clean), num))
+    return clean
+
+
 def _filter_lines(lines, header, args):
     """Filter the given lines based on some parameter (e.g. state).
     """
@@ -255,10 +286,10 @@ def _filter_lines(lines, header, args):
     num = len(clean)
     args.log.debug("filtering from '{}' lines".format(num))
 
-    # Remove 'extern' and 'batch' entries
-    clean = [cc for cc in clean
-             if not (cc['JobID'].endswith('extern') or cc['JobID'].endswith('batch'))]
-    args.log.debug("{}/{} interesting lines".format(len(clean), num))
+    # # Remove 'extern' and 'batch' entries
+    # clean = [cc for cc in clean
+    #          if not (cc['JobID'].endswith('extern') or cc['JobID'].endswith('batch'))]
+    # args.log.debug("{}/{} interesting lines".format(len(clean), num))
 
     def _log(cln, num, str):
         args.log.info("{}/{} {}".format(len(cln), num, str))
@@ -419,3 +450,30 @@ def _parse_state_value(state):
         return None, None
 
     return state, idx
+
+
+def _replace_lines(lines, header, args):
+    """
+    """
+    args.log.debug("sacct._replace_lines()")
+
+    # Find 'failed' (`FAILED`, `CANCELLED`, `TIMEOUT`) lines
+    inds = []
+    names = []
+    for ii, ll in enumerate(lines):
+        if ll['State'] in const.STATE_KEYS_FAILED:
+            inds.append(ii)
+            names.append(ll['JobName'])
+            # print(inds[-1], names[-1])
+
+    # Check each 'failed' entry for a running or successful duplicate
+    #    Iterate in reverse order so that deleting entries doesnt messup indices
+    for ii, ll in zip(inds[::-1], names[::-1]):
+        for jj, nn in enumerate(lines):
+            if ii == jj:
+                continue
+            if (ll == nn['JobName']) and (nn['State'] in const.STATE_KEYS_OKAY):
+                lines.pop(ii)
+                break
+
+    return lines

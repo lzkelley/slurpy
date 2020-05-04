@@ -82,12 +82,11 @@ def _init_argparse():
     # Default start time
     if _DEFAULT_ARG_START is None:
         def_start = None
-    #    Interpret `_DEFAULT_ARG_START` as a number of days in the past
     else:
         import datetime
+        #    Interpret `_DEFAULT_ARG_START` as a number of days in the past
         dt = datetime.datetime.now() + datetime.timedelta(days=_DEFAULT_ARG_START)
         def_start = dt.strftime("%Y-%m-%dT%H:%M:%S")
-        # print("def_start = '{}'".format(def_start))
 
     # Construct Argument Parser
     # -------------------------
@@ -100,6 +99,10 @@ def _init_argparse():
     parser.add_argument(
         "--DEBUG", action="store_true", dest="debug", default=False,
         help="Lots of output for debugging purposes only.")
+
+    parser.add_argument(
+        "--replace", action="store_true", dest="replace", default=False,
+        help="Replace failed/canceled/timeout sacct entries with newer ones (if names match).")
 
     parser.add_argument(
         "--head", nargs='?', dest="head", default=None, const=10,
